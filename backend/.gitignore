@@ -1,0 +1,26 @@
+# Environment variables file
+.env
+
+# Python caching
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Packaging
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Uploaded documents storage directory
+uploads/
+
+# OS metadata
+.DS_Store
+Thumbs.db

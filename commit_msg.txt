@@ -1,0 +1,9 @@
+feat: initial commit — LexAI Legal Contract Intelligence Assistant
+
+- FastAPI backend with RAG pipeline (LangChain + Qdrant + Groq)
+- Document ingestion: PDF/DOCX parsing, chunking, embedding
+- Hybrid retrieval with source citations
+- Risk analysis with structured JSON output
+- Streaming SSE chat endpoint
+- React/Vite frontend with ChatGPT-style UI
+- Docker ready for Render deployment

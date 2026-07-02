@@ -1,0 +1,102 @@
+:root {
+  --bg-page:      #ffffff;
+  --bg-sidebar:   #f9f9f9;
+  --bg-hover:     #f0f0f0;
+  --bg-active:    #ede9fe;
+  --bg-input:     #f4f4f5;
+  --bg-user-msg:  #6366f1;
+  --bg-tag:       #f4f4f5;
+
+  --accent:       #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-light: #ede9fe;
+  --accent-text:  #4f46e5;
+
+  --text-primary:   #111827;
+  --text-secondary: #6b7280;
+  --text-muted:     #9ca3af;
+  --text-on-accent: #ffffff;
+
+  --border:        #e5e7eb;
+  --border-strong: #d1d5db;
+
+  --success:     #10b981;
+  --success-bg:  #ecfdf5;
+  --warning:     #d97706;
+  --warning-bg:  #fffbeb;
+  --danger:      #dc2626;
+  --danger-bg:   #fef2f2;
+
+  --radius-sm:  6px;
+  --radius-md:  10px;
+  --radius-lg:  14px;
+  --radius-xl:  18px;
+  --radius-full: 9999px;
+
+  --sidebar-width: 280px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg-page);
+  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  height: 100vh;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Thin scrollbar */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { 
+  background: var(--border-strong);
+  border-radius: var(--radius-full);
+}
+
+/* Streaming cursor */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+.streaming-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 14px;
+  background: var(--accent);
+  border-radius: 1px;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 0.75s ease infinite;
+}
+
+/* Fade in up */
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.fade-in { animation: fadeInUp 0.25s ease forwards; }
+
+/* Spin */
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinning { animation: spin 0.7s linear infinite; }
+
+/* Markdown styles */
+.markdown-content { line-height: 1.8; color: var(--text-primary); }
+.markdown-content p { margin-bottom: 12px; }
+.markdown-content p:last-child { margin-bottom: 0; }
+.markdown-content strong { font-weight: 600; color: var(--text-primary); }
+.markdown-content ul, 
+.markdown-content ol { padding-left: 22px; margin-bottom: 12px; }
+.markdown-content li { margin-bottom: 5px; color: var(--text-primary); }
+.markdown-content code {
+  background: var(--bg-tag);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--accent-text);
+}

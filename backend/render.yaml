@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: lexai-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: QDRANT_URL
+        sync: false
+      - key: QDRANT_API_KEY
+        sync: false
+      - key: QDRANT_COLLECTION_NAME
+        value: legal_contracts
+      - key: MAX_UPLOAD_SIZE_MB
+        value: "20"
+      - key: ALLOWED_ORIGINS
+        value: "*"
+      - key: PORT
+        value: "8000"
