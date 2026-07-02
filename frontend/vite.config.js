@@ -8,9 +8,15 @@ export default defineConfig({
     sourcemap: false,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          markdown: ['react-markdown'],
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react-dom') || id.includes('react/')) {
+              return 'vendor'
+            }
+            if (id.includes('react-markdown')) {
+              return 'markdown'
+            }
+          }
         }
       }
     }
