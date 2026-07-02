@@ -86,6 +86,10 @@ app.add_middleware(
 app.include_router(documents.router, prefix="/api/documents", tags=["Documents"])
 app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
 
+@app.get("/", tags=["System"])
+async def root():
+    return {"status": "LexAI Backend API is running perfectly!"}
+
 # Health check endpoint
 @app.get("/api/health", tags=["System"])
 async def health_check():
