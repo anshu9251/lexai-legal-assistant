@@ -59,6 +59,17 @@ async def lifespan(app: FastAPI):
         except Exception as idx_err:
             logger.warning(f"Could not create payload index for doc_id: {idx_err}")
             
+        # Ensure payload index for session_id exists to support session isolation
+        try:
+            logger.info("Ensuring payload index exists for field 'session_id'...")
+            client.create_payload_index(
+                collection_name=settings.QDRANT_COLLECTION_NAME,
+                field_name="session_id",
+                field_schema="keyword"
+            )
+        except Exception as idx_err:
+            logger.warning(f"Could not create payload index for session_id: {idx_err}")
+            
         logger.info("Qdrant collection ready")
     except Exception as e:
         logger.warning(f"Qdrant is unreachable or failed to initialize: {e}")

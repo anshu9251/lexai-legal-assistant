@@ -161,7 +161,7 @@ class DocumentService:
                 detail=f"Failed to index document chunks: {str(e)}"
             )
 
-    def delete_document(self, doc_id: str) -> bool:
+    def delete_document(self, doc_id: str, session_id: str | None = None) -> bool:
         """
         Deletes all points in Qdrant belonging to doc_id.
         """
@@ -171,15 +171,21 @@ class DocumentService:
                 api_key=settings.QDRANT_API_KEY
             )
             
-            # Using delete_points with Filter and FieldCondition
-            delete_filter = Filter(
-                must=[
+            # Construct conditions requiring both doc_id and session_id (if present)
+            must_conditions = [
+                FieldCondition(
+                    key="doc_id",
+                    match=MatchValue(value=doc_id)
+                )
+            ]
+            if session_id:
+                must_conditions.append(
                     FieldCondition(
-                        key="doc_id",
-                        match=MatchValue(value=doc_id)
+                        key="session_id",
+                        match=MatchValue(value=session_id)
                     )
-                ]
-            )
+                )
+            delete_filter = Filter(must=must_conditions)
             
             client.delete(
                 collection_name=settings.QDRANT_COLLECTION_NAME,
@@ -193,7 +199,7 @@ class DocumentService:
                 detail=f"Failed to delete document from vector database: {str(e)}"
             )
 
-    def list_documents(self) -> list[dict]:
+    def list_documents(self, session_id: str | None = None) -> list[dict]:
         """
         Retrieves unique documents in Qdrant collection.
         Returns unique docs with: doc_id, filename, page_count (max page number), chunk_count, upload_date
@@ -204,15 +210,27 @@ class DocumentService:
                 api_key=settings.QDRANT_API_KEY
             )
             
+            scroll_filter = None
+            if session_id:
+                scroll_filter = Filter(
+                    must=[
+                        FieldCondition(
+                            key="session_id",
+                            match=MatchValue(value=session_id)
+                        )
+                    ]
+                )
+            
             docs = {}
             offset = None
             
             while True:
-                # Scroll through points
+                # Scroll through points matching filter
                 records, offset = client.scroll(
                     collection_name=settings.QDRANT_COLLECTION_NAME,
                     limit=100,
                     offset=offset,
+                    scroll_filter=scroll_filter,
                     with_payload=True,
                     with_vectors=False
                 )

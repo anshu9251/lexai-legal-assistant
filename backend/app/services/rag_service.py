@@ -2,7 +2,7 @@ import json
 import re
 from typing import Generator
 from qdrant_client import QdrantClient
-from qdrant_client.models import Filter, FieldCondition, MatchAny
+from qdrant_client.models import Filter, FieldCondition, MatchAny, MatchValue
 from groq import Groq
 
 from app.config import settings
@@ -16,19 +16,28 @@ class RAGService:
         )
         self.groq_client = Groq(api_key=settings.GROQ_API_KEY)
 
-    def retrieve_chunks(self, query: str, doc_ids: list[str] | None, top_k: int = 6) -> list[dict]:
+    def retrieve_chunks(self, query: str, doc_ids: list[str] | None, top_k: int = 6, session_id: str | None = None) -> list[dict]:
         query_vector = _embedding_model.encode(query).tolist()
         
-        filter_obj = None
+        must_conditions = []
         if doc_ids:
-            filter_obj = Filter(
-                must=[
-                    FieldCondition(
-                        key="doc_id",
-                        match=MatchAny(any=doc_ids)
-                    )
-                ]
+            must_conditions.append(
+                FieldCondition(
+                    key="doc_id",
+                    match=MatchAny(any=doc_ids)
+                )
             )
+        if session_id:
+            must_conditions.append(
+                FieldCondition(
+                    key="session_id",
+                    match=MatchValue(value=session_id)
+                )
+            )
+            
+        filter_obj = None
+        if must_conditions:
+            filter_obj = Filter(must=must_conditions)
             
         results = self.qdrant_client.query_points(
             collection_name=settings.QDRANT_COLLECTION_NAME,

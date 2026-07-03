@@ -8,6 +8,24 @@ const client = axios.create({
   headers: { 'Content-Type': 'application/json' }
 });
 
+// Session ID Generation & Storage
+let sessionId = localStorage.getItem('lexai_session_id');
+if (!sessionId) {
+  sessionId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'sess_' + Math.random().toString(36).substring(2, 15);
+  localStorage.setItem('lexai_session_id', sessionId);
+}
+
+// Request interceptor to inject Session ID header
+client.interceptors.request.use(
+  (config) => {
+    config.headers['X-Session-ID'] = sessionId;
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export default client;
 
 export const uploadDocument = async (file) => {
@@ -77,6 +95,7 @@ export const streamAnswer = (query, docIds, onToken, onSources, onDone, onError)
   if (docIds && docIds.length > 0) {
     url.searchParams.set('doc_ids', docIds.join(','));
   }
+  url.searchParams.set('session_id', sessionId);
   const eventSource = new EventSource(url.toString());
 
   eventSource.addEventListener('sources', (event) => {

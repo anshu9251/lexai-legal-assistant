@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Header
 from fastapi.responses import StreamingResponse
 import json
 from app.models.schemas import ChatRequest, ChatResponse, SourceCitation
@@ -7,9 +7,9 @@ from app.services.rag_service import RAGService
 router = APIRouter()
 
 @router.post("/ask", response_model=ChatResponse)
-async def ask_question(request: ChatRequest):
+async def ask_question(request: ChatRequest, x_session_id: str | None = Header(None)):
     rag = RAGService()
-    chunks = rag.retrieve_chunks(request.query, request.doc_ids, top_k=6)
+    chunks = rag.retrieve_chunks(request.query, request.doc_ids, top_k=6, session_id=x_session_id)
     
     if not chunks:
         return ChatResponse(
@@ -44,24 +44,25 @@ async def ask_question(request: ChatRequest):
     return ChatResponse(answer=answer, sources=unique_sources, query=request.query)
 
 @router.post("/risks")
-async def analyze_risks_endpoint(request: dict):
+async def analyze_risks_endpoint(request: dict, x_session_id: str | None = Header(None)):
     doc_ids = request.get("doc_ids")
     rag = RAGService()
     chunks = rag.retrieve_chunks(
         query="termination penalty liability indemnity non-compete confidentiality breach damages",
         doc_ids=doc_ids,
-        top_k=10
+        top_k=10,
+        session_id=x_session_id
     )
     risks = rag.analyze_risks(chunks)
     return {"risks": risks}
 
 @router.get("/stream")
-async def ask_question_stream(query: str, doc_ids: str = None):
+async def ask_question_stream(query: str, doc_ids: str = None, session_id: str | None = None):
     doc_id_list = doc_ids.split(",") if doc_ids else None
     
     def generate():
         rag = RAGService()
-        chunks = rag.retrieve_chunks(query, doc_id_list, top_k=6)
+        chunks = rag.retrieve_chunks(query, doc_id_list, top_k=6, session_id=session_id)
         
         if not chunks:
             yield "data: I could not find relevant information.\n\n"

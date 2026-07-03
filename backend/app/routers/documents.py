@@ -1,6 +1,6 @@
 from datetime import datetime
 import uuid
-from fastapi import APIRouter, UploadFile, File, HTTPException, status
+from fastapi import APIRouter, UploadFile, File, HTTPException, status, Header
 from app.models.schemas import DocumentUploadResponse, DocumentListItem
 from app.config import settings
 from app.services.document_service import DocumentService
@@ -13,7 +13,7 @@ document_service = DocumentService()
 storage_service = StorageService()
 
 @router.post("/upload", response_model=DocumentUploadResponse, status_code=status.HTTP_201_CREATED)
-def upload_document(file: UploadFile = File(...)):
+def upload_document(file: UploadFile = File(...), x_session_id: str | None = Header(None)):
     # Validate extension
     filename = file.filename or ""
     if not (filename.lower().endswith(".pdf") or filename.lower().endswith(".docx")):
@@ -52,10 +52,11 @@ def upload_document(file: UploadFile = File(...)):
         # Chunk document pages
         chunks = document_service.chunk_pages(pages)
         
-        # Add doc_id and upload_date to every chunk
+        # Add doc_id, upload_date, and session_id to every chunk
         for chunk in chunks:
             chunk["doc_id"] = doc_id
             chunk["upload_date"] = upload_date
+            chunk["session_id"] = x_session_id
             
         # Embed and store in Qdrant
         chunk_count = document_service.embed_and_store(chunks, doc_id)
@@ -78,9 +79,9 @@ def upload_document(file: UploadFile = File(...)):
         )
 
 @router.get("/list", response_model=list[DocumentListItem])
-async def list_documents():
+async def list_documents(x_session_id: str | None = Header(None)):
     try:
-        docs = document_service.list_documents()
+        docs = document_service.list_documents(x_session_id)
         # Map list_documents payload to DocumentListItem
         return [
             DocumentListItem(
@@ -99,10 +100,10 @@ async def list_documents():
         )
 
 @router.delete("/{doc_id}")
-async def delete_document(doc_id: str):
+async def delete_document(doc_id: str, x_session_id: str | None = Header(None)):
     try:
-        # Delete from Qdrant
-        document_service.delete_document(doc_id)
+        # Delete from Qdrant, restricting to user's session ID
+        document_service.delete_document(doc_id, x_session_id)
         
         # Delete local files
         storage_service.delete_upload(doc_id)
