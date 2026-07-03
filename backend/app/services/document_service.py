@@ -135,8 +135,8 @@ class DocumentService:
             points = []
             for chunk, embedding in zip(chunks, embeddings):
                 chunk_id = chunk["chunk_id"]
-                # Convert string UUID to proper UUID object as specified
-                point_uuid = UUID(chunk_id)
+                # Convert string UUID to proper string UUID for Qdrant
+                point_uuid = str(UUID(chunk_id))
                 
                 # Payload contains all chunk fields
                 payload = dict(chunk)
