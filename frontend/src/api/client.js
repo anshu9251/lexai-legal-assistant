@@ -14,7 +14,11 @@ export const uploadDocument = async (file) => {
   try {
     const formData = new FormData();
     formData.append('file', file);
-    const response = await client.post('/api/documents/upload', formData);
+    const response = await client.post('/api/documents/upload', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
     return response.data;
   } catch (error) {
     console.error("Error uploading document:", error);
