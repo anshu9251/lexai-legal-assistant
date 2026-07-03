@@ -45,6 +45,7 @@ body {
   font-size: 14px;
   line-height: 1.6;
   height: 100vh;
+  height: 100dvh;
   overflow: hidden;
   -webkit-font-smoothing: antialiased;
 }
@@ -104,6 +105,7 @@ body {
 /* App layout classes */
 .app-container {
   height: 100vh;
+  height: 100dvh;
   display: flex;
   overflow: hidden;
   background: var(--bg-page);
@@ -118,7 +120,7 @@ body {
   background-color: var(--bg-sidebar);
   border-right: 1px solid var(--border);
   flex-shrink: 0;
-  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.25s;
 }
 
 .sidebar-overlay {
@@ -157,15 +159,22 @@ body {
     left: 0;
     z-index: 100;
     transform: translateX(-100%);
+    visibility: hidden;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   }
   
   .app-sidebar.open {
     transform: translateX(0);
+    visibility: visible;
   }
 
   .mobile-menu-btn {
     display: flex !important;
+  }
+
+  /* Shrink text container to prevent Clear button overflow */
+  .chat-header > div {
+    min-width: 0;
   }
 
   /* Override inline layout spacing on mobile devices */

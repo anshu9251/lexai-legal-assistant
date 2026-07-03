@@ -112,7 +112,8 @@ export default function ChatPanel({
               display: 'flex',
               alignItems: 'center',
               gap: '5px',
-              cursor: 'pointer'
+              cursor: 'pointer',
+              flexShrink: 0
             }}
             onMouseEnter={(e) => e.currentTarget.style.color = 'var(--text-primary)'}
             onMouseLeave={(e) => e.currentTarget.style.color = 'var(--text-muted)'}
