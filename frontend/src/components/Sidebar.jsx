@@ -12,7 +12,9 @@ export default function Sidebar({
   selectAll,
   clearSelection,
   onAnalyzeRisks,
-  isRiskLoading
+  isRiskLoading,
+  isOpen,
+  onClose
 }) {
   const uploadZoneRef = useRef(null);
   const [localUploading, setLocalUploading] = useState(false);
@@ -37,15 +39,16 @@ export default function Sidebar({
   };
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      width: 'var(--sidebar-width)',
-      height: '100%',
-      backgroundColor: 'var(--bg-sidebar)',
-      borderRight: '1px solid var(--border)',
-      flexShrink: 0
-    }}>
+    <div 
+      className={`app-sidebar ${isOpen ? 'open' : ''}`}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100%',
+        backgroundColor: 'var(--bg-sidebar)',
+        borderRight: '1px solid var(--border)',
+      }}
+    >
       {/* TOP LOGO AREA */}
       <div style={{ padding: '16px 14px 12px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>

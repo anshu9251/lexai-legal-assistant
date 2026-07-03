@@ -11,6 +11,7 @@ function App() {
   
   const [isRiskLoading, setIsRiskLoading] = useState(false);
   const [riskData, setRiskData] = useState(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const handleAnalyzeRisks = async () => {
     setIsRiskLoading(true);
@@ -25,6 +26,8 @@ function App() {
       const result = await analyzeRisks(docIdsArray);
       
       setRiskData(result.risks || []);
+      // Close sidebar drawer on mobile after analyzing risks
+      setIsSidebarOpen(false);
     } catch (error) {
       console.error("Failed to analyze risks", error);
       setRiskData([]); 
@@ -38,17 +41,26 @@ function App() {
   };
 
   return (
-    <div style={{ height: '100vh', display: 'flex', overflow: 'hidden', background: 'var(--bg-page)' }}>
+    <div className="app-container">
+      {/* Backdrop overlay for mobile sidebar drawer */}
+      <div 
+        className={`sidebar-overlay ${isSidebarOpen ? 'open' : ''}`}
+        onClick={() => setIsSidebarOpen(false)}
+      />
+
       <Sidebar
         {...docState}
         onAnalyzeRisks={handleAnalyzeRisks}
         isRiskLoading={isRiskLoading}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
       />
 
       <ChatPanel
         {...chatState}
         sendMessage={handleSendMessage}
         selectedDocCount={docState.selectedDocIds.size}
+        onMenuToggle={() => setIsSidebarOpen(true)}
       />
 
       {(riskData !== null || isRiskLoading) && (

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Send, Trash2, Loader, Scale } from 'lucide-react';
+import { Menu, Send, Trash2, Loader, Scale } from 'lucide-react';
 import SourceChip from './SourceChip';
 
 export default function ChatPanel({
@@ -9,7 +9,8 @@ export default function ChatPanel({
   sendMessage,
   clearChat,
   selectedDocCount,
-  totalDocCount
+  totalDocCount,
+  onMenuToggle
 }) {
   const [input, setInput] = useState('');
   const messagesEndRef = useRef(null);
@@ -57,25 +58,47 @@ export default function ChatPanel({
   ];
 
   return (
-    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', height: '100%', background: 'white', overflow: 'hidden' }}>
+    <div className="chat-panel">
       
       {/* HEADER */}
-      <div style={{
-        padding: '14px 24px',
-        borderBottom: '1px solid var(--border)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        flexShrink: 0
-      }}>
-        <div>
-          <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-primary)' }}>
-            Contract Q&A
-          </div>
-          <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
-            {selectedDocCount > 0 
-              ? `${selectedDocCount} contract${selectedDocCount > 1 ? 's' : ''} active` 
-              : 'All contracts'}
+      <div 
+        className="chat-header"
+        style={{
+          padding: '14px 24px',
+          borderBottom: '1px solid var(--border)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexShrink: 0
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          {/* Hamburger Menu Toggle (Mobile Only) */}
+          <button
+            className="mobile-menu-btn"
+            onClick={onMenuToggle}
+            style={{
+              background: 'none',
+              border: 'none',
+              padding: '4px',
+              cursor: 'pointer',
+              display: 'none',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-primary)'
+            }}
+          >
+            <Menu size={20} />
+          </button>
+          <div>
+            <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-primary)' }}>
+              Contract Q&A
+            </div>
+            <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
+              {selectedDocCount > 0 
+                ? `${selectedDocCount} contract${selectedDocCount > 1 ? 's' : ''} active` 
+                : 'All contracts'}
+            </div>
           </div>
         </div>
         {messages.length > 0 && (
@@ -165,7 +188,7 @@ export default function ChatPanel({
             {messages.map((msg) => (
               <div 
                 key={msg.id} 
-                className="fade-in"
+                className="chat-bubble-container fade-in"
                 style={{
                   padding: '20px 24px',
                   background: msg.role === 'assistant' ? 'white' : 'transparent',
@@ -174,7 +197,7 @@ export default function ChatPanel({
                 }}
               >
                 {msg.role === 'user' ? (
-                  <div style={{ maxWidth: '65%' }}>
+                  <div style={{ maxWidth: '82%' }}>
                     <div style={{
                       background: 'var(--accent)',
                       color: 'white',
@@ -255,19 +278,22 @@ export default function ChatPanel({
       </div>
 
       {/* INPUT SECTION */}
-      <div style={{ padding: '16px 24px 20px', flexShrink: 0, borderTop: '1px solid var(--border)' }}>
+      <div className="chat-input-wrapper" style={{ padding: '16px 24px 20px', flexShrink: 0, borderTop: '1px solid var(--border)' }}>
         <div style={{ maxWidth: '760px', margin: '0 auto', width: '100%' }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'flex-end',
-            gap: '8px',
-            background: isFocused ? 'white' : 'var(--bg-input)',
-            border: `1px solid ${isFocused ? 'var(--accent)' : 'var(--border-strong)'}`,
-            borderRadius: 'var(--radius-xl)',
-            padding: '8px 8px 8px 16px',
-            transition: 'all 0.15s',
-            boxShadow: isFocused ? '0 0 0 3px rgba(99,102,241,0.1)' : 'none'
-          }}>
+          <div 
+            className="chat-input-inner"
+            style={{
+              display: 'flex',
+              alignItems: 'flex-end',
+              gap: '8px',
+              background: isFocused ? 'white' : 'var(--bg-input)',
+              border: `1px solid ${isFocused ? 'var(--accent)' : 'var(--border-strong)'}`,
+              borderRadius: 'var(--radius-xl)',
+              padding: '8px 8px 8px 16px',
+              transition: 'all 0.15s',
+              boxShadow: isFocused ? '0 0 0 3px rgba(99,102,241,0.1)' : 'none'
+            }}
+          >
             <textarea
               ref={textareaRef}
               value={input}
